@@ -9,7 +9,13 @@ async function insertPostHashtags(postId, hashtagId) {
 }
 
 async function selectPosts() {
-    return connection.query('SELECT id, url, description FROM posts ORDER BY id DESC LIMIT 20')
+    return connection.query(`
+        SELECT p.id, u.name AS username, p.url, p.description 
+        FROM posts p 
+        JOIN users u ON p."ownerId" = u.id 
+        ORDER BY p.id DESC 
+        LIMIT 20
+    `)
 }
 
 export { insertPost, insertPostHashtags, selectPosts }
