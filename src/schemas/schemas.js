@@ -1,8 +1,9 @@
-import postSchema from './postSchema.js'
+import postSchema from './postSchema.js';
+import { signupSchema } from './authSchema.js';
 
 const schemas = {
     signin: '',
-    signup: '',
+    signup: signupSchema,
     post: postSchema,
     hashtag: ''
 }
