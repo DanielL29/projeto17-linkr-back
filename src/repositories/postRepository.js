@@ -15,7 +15,7 @@ async function insertPostHashtags(postId, hashtagId) {
 
 async function selectPosts() {
     return connection.query(`
-        SELECT p.id, u.name AS username, p.url, p.description 
+        SELECT p.*, u.name AS username 
         FROM posts p 
         JOIN users u ON p."ownerId" = u.id 
         ORDER BY p.id DESC 

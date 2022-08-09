@@ -6,7 +6,7 @@ async function publishPost(req, res) {
     const { urlImage, urlDescription, urlTitle } = res.locals
 
     try {
-        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, 1)
+        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, 2)
 
         if(post.description) {
             let hashtags = []

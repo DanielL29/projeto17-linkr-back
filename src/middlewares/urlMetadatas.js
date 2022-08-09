@@ -10,7 +10,7 @@ async function urlMetadatas(req, res, next) {
         res.locals.urlDescription = metadata.description
 
         if(!metadata.image.startsWith('https://')) {
-            res.locals.urlImage = metadata.source + metadata.image
+            res.locals.urlImage = 'https://' + metadata.source + metadata.image
         } else {
             res.locals.urlImage = metadata.image
         }
