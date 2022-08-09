@@ -1,5 +1,5 @@
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
-import { insertPost, insertPostHashtags } from "../repositories/postRepository.js"
+import { insertPost, insertPostHashtags, selectPosts } from "../repositories/postRepository.js"
 
 async function publishPost(req, res) {
     const post = req.body
@@ -39,7 +39,13 @@ async function publishPost(req, res) {
 }
 
 async function getPosts(req, res) {
+    try {
+        const { rows: posts } = await selectPosts()
 
-}
+        res.send(posts)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+}   
 
 export { publishPost, getPosts }
