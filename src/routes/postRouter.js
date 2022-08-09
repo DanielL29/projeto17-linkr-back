@@ -2,9 +2,9 @@ import { Router } from 'express'
 import { getPosts, publishPost } from '../controllers/postController.js'
 import validateSchema from '../middlewares/validations/validateSchema.js'
 
-const router = Router()
+const postRouter = Router()
 
-router.post('/posts', validateSchema('post'), publishPost) // needs auth/token
-router.get('/posts', getPosts)
+postRouter.post('/posts', validateSchema('post'), publishPost) // needs auth/token
+postRouter.get('/posts', getPosts)
 
-export default router
+export default postRouter
