@@ -8,4 +8,8 @@ async function insertPostHashtags(postId, hashtagId) {
     connection.query('INSERT INTO "postHashtags" ("postId", "hashtagId") VALUES ($1, $2)', [postId, hashtagId])
 }
 
-export { insertPost, insertPostHashtags }
+async function selectPosts() {
+    return connection.query('SELECT id, url, description FROM posts ORDER BY id DESC LIMIT 20')
+}
+
+export { insertPost, insertPostHashtags, selectPosts }
