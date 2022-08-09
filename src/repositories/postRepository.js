@@ -1,7 +1,12 @@
 import connection from '../database/db.js'
 
-async function insertPost(url, description = '', userId) {
-    return connection.query('INSERT INTO posts (url, description, "ownerId") VALUES ($1, $2, $3) RETURNING id', [url, description, userId])
+async function insertPost(url, description = '', urlImage, urlDescription, urlTitle, userId) {
+    return connection.query(`
+        INSERT INTO posts 
+            (url, description, "urlImage", "urlDescription", "urlTitle", "ownerId")
+            VALUES ($1, $2, $3, $4, $5, $6) 
+        RETURNING id
+    `, [url, description, urlImage, urlDescription, urlTitle, userId])
 }
 
 async function insertPostHashtags(postId, hashtagId) {
@@ -10,7 +15,7 @@ async function insertPostHashtags(postId, hashtagId) {
 
 async function selectPosts() {
     return connection.query(`
-        SELECT p.id, u.name AS username, p.url, p.description 
+        SELECT p.*, u.name AS username 
         FROM posts p 
         JOIN users u ON p."ownerId" = u.id 
         ORDER BY p.id DESC 
