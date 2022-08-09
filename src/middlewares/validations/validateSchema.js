@@ -5,7 +5,11 @@ function validateSchema(schema) {
         const { error } = schemas[schema].validate(req.body, { abortEarly: false })
 
         if(error) {
-            return res.status(422).send(error)
+            let details = ""
+
+            error.details.forEach(detail => details += `${detail.context.key}: ${detail.message} \n`)
+
+            return res.status(422).send(details)
         }
 
         next()
