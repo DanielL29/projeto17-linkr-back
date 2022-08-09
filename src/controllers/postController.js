@@ -23,10 +23,11 @@ async function publishPost(req, res) {
                     const { rows: hashtagFounded } = await selectHashtag(hashtags[i])
 
                     if(hashtagFounded.length === 0) {
-                        await insertHashtag(hashtags[i])
+                        const { rows: hashtagInserted } = await insertHashtag(hashtags[i])
+                        await insertPostHashtags(postInserted[0].id, hashtagInserted[0].id)
+                    } else {
+                        await insertPostHashtags(postInserted[0].id, hashtagFounded[0].id)
                     }
-
-                    await insertPostHashtags(postInserted[0].id, hashtagFounded[0].id)
                 }
             }
         }
@@ -44,6 +45,7 @@ async function getPosts(req, res) {
 
         res.send(posts)
     } catch (err) {
+        console.log(err)
         res.status(500).send(err)
     }
 }   
