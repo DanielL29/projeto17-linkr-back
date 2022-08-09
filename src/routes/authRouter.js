@@ -1,10 +1,10 @@
 import { Router } from "express";
-import validateSchema from "./../middlewares/validations.js";
+import validateSchema from "./../middlewares/validations/validateSchema.js";
 import checkIfEmailExists from "./../middlewares/auth/checkIfEmailExists.js";
-import { insertUser } from "./../repositories/authRepository.js";
+import { signup } from "./../controllers/authController.js";
 
 const authRouter = Router();
 
-authRouter.post("/signup", validateSchema("signup"), checkIfEmailExists, insertUser);
+authRouter.post("/signup", validateSchema("signup"), checkIfEmailExists, signup);
 
 export default authRouter;
