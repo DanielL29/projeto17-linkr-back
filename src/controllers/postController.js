@@ -3,9 +3,10 @@ import { insertPost, insertPostHashtags, selectPosts } from "../repositories/pos
 
 async function publishPost(req, res) {
     const post = req.body
+    const { urlImage, urlDescription, urlTitle } = res.locals
 
     try {
-        const { rows: postInserted } = await insertPost(post.url, post.description, 1)
+        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, 1)
 
         if(post.description) {
             let hashtags = []
