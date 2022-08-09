@@ -5,3 +5,5 @@ async function getUserByEmail(email) {
     const user = await connection.query(query, [email]);
     return user;
 }
+
+export { getUserByEmail };
