@@ -7,20 +7,20 @@ async function getHashtags(req, res) {
         res.send(hashtags)
     } catch (err) {
         console.log(err)
-        res.status(500).send(err)
+        res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
 }
 
 async function getHashtagPosts(req, res) {
-    const { hashtagId } = req.params
+    const { hashtag } = req.params
 
     try {
-        const { rows: hashtagPosts } = await selectHashtagPosts(hashtagId)
+        const { rows: hashtagPosts } = await selectHashtagPosts(hashtag)
 
         res.send(hashtagPosts)
     } catch (err) {
         console.log(err)
-        res.status(500).send(err)
+        res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
 }
 

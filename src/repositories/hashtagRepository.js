@@ -12,16 +12,16 @@ async function selectHashtags() {
     return connection.query('SELECT * FROM hashtags')
 }
 
-async function selectHashtagPosts(id) {
+async function selectHashtagPosts(name) {
     return connection.query(`
         SELECT p.* 
         FROM "postHashtags" ph
         JOIN hashtags h ON h.id = ph."hashtagId"
         JOIN posts p ON p.id = ph."postId"
-        WHERE h.id = $1
+        WHERE h.name = $1
         ORDER BY p.id DESC
         LIMIT 20
-    `, [id])
+    `, [name])
 }
 
 export { insertHashtag, selectHashtag, selectHashtags, selectHashtagPosts }

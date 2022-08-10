@@ -36,7 +36,7 @@ async function publishPost(req, res) {
         res.sendStatus(201)
     } catch (err) {
         console.log(err)
-        res.status(500).send(err)
+        res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
 }
 
@@ -47,7 +47,7 @@ async function getPosts(req, res) {
         res.send(posts)
     } catch (err) {
         console.log(err)
-        res.status(500).send(err)
+        res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
 }   
 

@@ -4,6 +4,6 @@ import { getHashtagPosts, getHashtags } from '../controllers/hashtagController.j
 const hashtagRouter = Router()
 
 hashtagRouter.get('/hashtags', getHashtags)
-hashtagRouter.get('/hashtags/:hashtagId', getHashtagPosts)
+hashtagRouter.get('/hashtags/:hashtag', getHashtagPosts)
 
 export default hashtagRouter
