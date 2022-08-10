@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import authRouter from './authRouter.js'
 import postRouter from './postRouter.js'
-import authRouter from './authRouter.js'
 import hashtagRouter from './hashtagRouter.js'
 
 const router = Router();
