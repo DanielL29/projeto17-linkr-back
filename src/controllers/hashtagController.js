@@ -1,4 +1,4 @@
-import { selectHashtags } from "../repositories/hashtagRepository.js"
+import { selectHashtagPosts, selectHashtags } from "../repositories/hashtagRepository.js"
 
 async function getHashtags(req, res) {
     try {
@@ -11,4 +11,17 @@ async function getHashtags(req, res) {
     }
 }
 
-export { getHashtags }
+async function getHashtagPosts(req, res) {
+    const { hashtagId } = req.params
+
+    try {
+        const { rows: hashtagPosts } = await selectHashtagPosts(hashtagId)
+
+        res.send(hashtagPosts)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+}
+
+export { getHashtags, getHashtagPosts }
