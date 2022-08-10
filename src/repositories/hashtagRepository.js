@@ -14,10 +14,11 @@ async function selectHashtags() {
 
 async function selectHashtagPosts(name) {
     return connection.query(`
-        SELECT p.* 
+        SELECT p.*, u.username 
         FROM "postHashtags" ph
         JOIN hashtags h ON h.id = ph."hashtagId"
         JOIN posts p ON p.id = ph."postId"
+        JOIN users u ON u.id = p."ownerId"
         WHERE h.name = $1
         ORDER BY p.id DESC
         LIMIT 20
