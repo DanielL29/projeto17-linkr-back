@@ -8,4 +8,8 @@ async function selectHashtag(name) {
     return connection.query('SELECT * FROM hashtags WHERE name = $1', [name])
 }
 
-export { insertHashtag, selectHashtag }
+async function selectHashtags() {
+    return connection.query('SELECT * FROM hashtags')
+}
+
+export { insertHashtag, selectHashtag, selectHashtags }
