@@ -6,6 +6,7 @@ import { signup, searchUsers } from "./../controllers/authController.js";
 const authRouter = Router();
 
 authRouter.post("/signup", validateSchema("signup"), checkIfEmailExists, signup);
+authRouter.post("signin", validateSchema("signin"))
 authRouter.get("/search", searchUsers)
 
 export default authRouter;
