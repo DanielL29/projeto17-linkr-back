@@ -2,9 +2,12 @@ import {
   insertUser,
   searchingUsers,
 } from "./../repositories/authRepository.js";
+import bcrypt from "bcrypt";
 
 async function signup(req, res) {
   const user = req.body;
+  const saltRounds = 10;
+  user.password = bcrypt.hash(user.password, saltRounds);
   try {
     await insertUser(user);
     res.sendStatus(201);
