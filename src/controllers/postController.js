@@ -41,8 +41,10 @@ async function publishPost(req, res) {
 }
 
 async function getPosts(req, res) {
+    const { hashtag } = req.query
+
     try {
-        const { rows: posts } = await selectPosts()
+        const { rows: posts } = await selectPosts(hashtag)
 
         res.send(posts)
     } catch (err) {
