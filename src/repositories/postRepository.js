@@ -13,14 +13,29 @@ async function insertPostHashtags(postId, hashtagId) {
     connection.query('INSERT INTO "postHashtags" ("postId", "hashtagId") VALUES ($1, $2)', [postId, hashtagId])
 }
 
-async function selectPosts() {
-    return connection.query(`
-        SELECT p.*, u.username
-        FROM posts p 
-        JOIN users u ON p."ownerId" = u.id 
-        ORDER BY p.id DESC 
-        LIMIT 20
-    `)
+async function selectPosts(hashtag, username) {
+    if (hashtag) {
+        return connection.query(`
+            SELECT p.*, u.username 
+            FROM "postHashtags" ph
+            JOIN hashtags h ON h.id = ph."hashtagId"
+            JOIN posts p ON p.id = ph."postId"
+                JOIN users u ON u.id = p."ownerId"
+            WHERE h.name = $1
+            ORDER BY p.id DESC
+            LIMIT 20
+        `, [hashtag])
+    } else if(username) {
+
+    } else {
+        return connection.query(`
+            SELECT p.*, u.username
+            FROM posts p 
+            JOIN users u ON p."ownerId" = u.id 
+            ORDER BY p.id DESC 
+            LIMIT 20
+        `)
+    }
 }
 
 export { insertPost, insertPostHashtags, selectPosts }
