@@ -73,4 +73,10 @@ async function updatePost(description, postId, userId){
 
 }
 
-export { insertPost, insertPostHashtags, selectPosts, updatePost };
+async function deletePost(postId, userId) {
+  return connection.query(`
+  DELETE FROM posts WHERE id = $1 AND "ownerId" = $2;
+`, [postId, userId]);
+}
+
+export { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost };
