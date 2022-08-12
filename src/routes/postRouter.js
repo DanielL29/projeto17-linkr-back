@@ -3,13 +3,13 @@ import { getPosts, publishPost, deletePostByUser, updatePostByUser} from '../con
 import validateJwtToken from '../middlewares/auth/validateJwtToken.js'
 import urlMetadatas from '../middlewares/urlMetadatas.js'
 import validateSchema from '../middlewares/validations/validateSchema.js'
+import verifyIfHaveHashtags from '../middlewares/verifyIfHaveHashtags.js'
 
 const postRouter = Router()
 
-postRouter.post('/posts', validateSchema('post'), urlMetadatas, publishPost) 
-postRouter.get('/posts', getPosts)
-postRouter.put('/updatepost', updatePostByUser) // needs auth/token
-postRouter.delete('/deletepost', validateJwtToken, deletePostByUser) 
-
+postRouter.post('/posts', validateJwtToken, validateSchema('post'), urlMetadatas, verifyIfHaveHashtags, publishPost) 
+postRouter.get('/posts', validateJwtToken, getPosts)
+postRouter.patch('/posts/:postId', verifyIfHaveHashtags, updatePostByUser) // needs auth/token
+postRouter.delete('/posts/:postId', validateJwtToken, deletePostByUser) 
 
 export default postRouter
