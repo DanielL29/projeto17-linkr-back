@@ -38,11 +38,14 @@ async function publishPost(req, res) {
         console.log(err)
         res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
-}
+} 
 
 async function getPosts(req, res) {
+    const { hashtag, username } = req.query
+    
+
     try {
-        const { rows: posts } = await selectPosts()
+        const { rows: posts } = await selectPosts(hashtag, username)
 
         res.send(posts)
     } catch (err) {
