@@ -63,4 +63,14 @@ async function selectPosts(hashtag, username) {
   }
 }
 
-export { insertPost, insertPostHashtags, selectPosts };
+async function updatePost(description, postId, userId){
+
+  return await connection.query(`
+    UPDATE posts p
+    SET description = $1 
+    WHERE p.id = $2 AND p."ownerId" = $3
+  `, [description, postId, userId]);
+
+}
+
+export { insertPost, insertPostHashtags, selectPosts, updatePost };
