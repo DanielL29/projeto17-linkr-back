@@ -1,7 +1,7 @@
 import connection from "./../database/db.js";
 
 async function getUserByEmail(email) {
-  const query = "SELECT * FROM users WHERE email = $1;";
+  const query = 'SELECT * FROM users WHERE email = $1;';
   const user = await connection.query(query, [email]);
   return user;
 }
@@ -15,13 +15,17 @@ async function insertUser(user) {
 
 async function searchingUsers(username) {
   const query = `
-    SELECT id, username, "pictureUrl" 
-    FROM users 
-    WHERE username LIKE $1;
+    SELECT id, LOWER(username), "pictureUrl" 
+    FROM users
+    WHERE LOWER(username) LIKE $1;
     `;
 
   const data = await connection.query(query, [`${username}%`]);
   return data;
 }
 
-export { getUserByEmail, insertUser, searchingUsers };
+async function selectUserById(id) {
+  return connection.query('SELECT username, "pictureUrl" FROM users WHERE id = $1', [id])
+}
+
+export { getUserByEmail, insertUser, searchingUsers, selectUserById };
