@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 async function signup(req, res) {
   const user = req.body;
   const saltRounds = 10;
-  user.password = bcrypt.hash(user.password, saltRounds);
+  user.password = await bcrypt.hash(user.password, saltRounds);
   try {
     await insertUser(user);
     res.sendStatus(201);
@@ -25,7 +25,7 @@ async function signin(req, res) {
     const data = {
       id: users[0].id,
     }
-    const token = jwt.sign(data, process.env.SECRET_KEY);
+    const token = await jwt.sign(data, process.env.SECRET_KEY);
     res.status(200).send(token);
   } catch {
     res.sendStatus(500);
