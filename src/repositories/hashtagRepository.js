@@ -9,7 +9,13 @@ async function selectHashtag(name) {
 }
 
 async function selectHashtags() {
-    return connection.query('SELECT * FROM hashtags')
+    return connection.query(`
+        SELECT h.*, COUNT(ph."hashtagId") as "hashtagPostsCount"
+        FROM "postHashtags" ph
+        JOIN hashtags h ON h.id = ph."hashtagId" 
+        GROUP BY h.id
+        ORDER BY "hashtagPostsCount" DESC, h.id
+    `)
 }
 
 export { insertHashtag, selectHashtag, selectHashtags }

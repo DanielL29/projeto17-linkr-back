@@ -4,8 +4,7 @@ import { signupSchema, signinSchema } from './authSchemas.js';
 const schemas = {
     signin: signinSchema,
     signup: signupSchema,
-    post: postSchema,
-    hashtag: ''
+    post: postSchema
 }
 
 export default schemas

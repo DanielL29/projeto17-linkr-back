@@ -24,4 +24,8 @@ async function searchingUsers(username) {
   return data;
 }
 
-export { getUserByEmail, insertUser, searchingUsers };
+async function selectUserById(id) {
+  return connection.query('SELECT username, "pictureUrl" FROM users WHERE id = $1', [id])
+}
+
+export { getUserByEmail, insertUser, searchingUsers, selectUserById };
