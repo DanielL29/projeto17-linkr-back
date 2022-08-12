@@ -15,9 +15,9 @@ async function insertUser(user) {
 
 async function searchingUsers(username) {
   const query = `
-    SELECT id, username, "pictureUrl" 
-    FROM users 
-    WHERE username LIKE $1;
+    SELECT id, LOWER(username), "pictureUrl" 
+    FROM users
+    WHERE LOWER(username) LIKE $1;
     `;
 
   const data = await connection.query(query, [`${username}%`]);

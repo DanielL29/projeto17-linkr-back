@@ -37,7 +37,7 @@ async function searchUsers(req, res) {
   const { username } = req.query;
 
   try {
-    const { rows: users } = await searchingUsers(username);
+    const { rows: users } = await searchingUsers(username.toLowerCase());
     res.status(200).send(users);
   } catch (err) {
     console.log(err);
