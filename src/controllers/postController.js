@@ -48,7 +48,7 @@ async function getPosts(req, res) {
         const { rows: posts } = await selectPosts(hashtag, username)
 
         res.send(posts)
-    } catch (err) {
+    } catch (err) { 
         console.log(err)
         res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
     }
