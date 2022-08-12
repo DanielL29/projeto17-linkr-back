@@ -15,7 +15,7 @@ async function signup(req, res) {
 
 async function searchUsers(req, res) {
   //inserir token validation - Rota precisa de credencial
-  const { username } = req.body;
+  const { username } = req.query;
 
   try {
     const { rows: users } = await searchingUsers(username);

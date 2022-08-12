@@ -14,8 +14,7 @@ async function insertUser(user) {
 }
 
 async function searchingUsers(username) {
-  
-    const query = `
+  const query = `
     SELECT id, username, "pictureUrl" 
     FROM users 
     WHERE username LIKE $1;
