@@ -6,7 +6,7 @@ import validateSchema from '../middlewares/validations/validateSchema.js'
 
 const postRouter = Router()
 
-postRouter.post('/posts', validateJwtToken, validateSchema('post'), urlMetadatas, publishPost) 
+postRouter.post('/posts', validateSchema('post'), urlMetadatas, publishPost) 
 postRouter.get('/posts', getPosts)
 postRouter.delete('/deletepost', validateJwtToken, deletePostByUser) 
 
