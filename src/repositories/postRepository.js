@@ -64,10 +64,20 @@ async function selectPosts(hashtag, username) {
     }
 }
 
-async function deletePost(postId, userId) {
-    return connection.query(`
-    DELETE FROM posts WHERE id = $1 AND "ownerId" = $2;
-  `, [postId, userId]);
+async function updatePost(description, postId, userId){
+
+  return await connection.query(`
+    UPDATE posts p
+    SET description = $1 
+    WHERE p.id = $2 AND p."ownerId" = $3
+  `, [description, postId, userId]);
+
 }
 
-export { insertPost, insertPostHashtags, selectPosts, deletePost };
+async function deletePost(postId, userId) {
+  return connection.query(`
+  DELETE FROM posts WHERE id = $1 AND "ownerId" = $2;
+`, [postId, userId]);
+}
+
+export { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost };

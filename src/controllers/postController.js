@@ -1,5 +1,5 @@
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
-import { insertPost, insertPostHashtags, selectPosts, deletePost } from "../repositories/postRepository.js"
+import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost } from "../repositories/postRepository.js"
 
 async function publishPost(req, res) {
     const post = req.body
@@ -54,6 +54,19 @@ async function getPosts(req, res) {
     }
 }   
 
+async function updatePostByUser(req, res) {
+    const { postId, userId, description } = req.body
+    console.log(typeof(description))
+    try {
+        const { rows: postUpdated } = await updatePost(description, postId, userId)
+
+        res.status(200).send(postUpdated)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('An error occured while trying to update the posts, please try again')
+    }
+}   
+
 async function deletePostByUser(req, res) {
     const { postId, userId } = req.query
     
@@ -66,5 +79,4 @@ async function deletePostByUser(req, res) {
     }
 }   
 
-
-export { publishPost, getPosts, deletePostByUser }
+export { publishPost, getPosts, updatePostByUser, deletePostByUser }
