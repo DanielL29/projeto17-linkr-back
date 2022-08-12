@@ -1,5 +1,5 @@
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
-import { insertPost, insertPostHashtags, selectPosts } from "../repositories/postRepository.js"
+import { insertPost, insertPostHashtags, selectPosts, deletePost } from "../repositories/postRepository.js"
 
 async function publishPost(req, res) {
     const post = req.body
@@ -54,4 +54,17 @@ async function getPosts(req, res) {
     }
 }   
 
-export { publishPost, getPosts }
+async function deletePostByUser(req, res) {
+    const { postId, userId } = req.query
+    
+    try {
+        await deletePost(postId, userId)
+        return res.status(202).send("Delete post successfully")
+    } catch (err) { 
+        console.log(err)
+        res.status(500).send('An error occured while trying delete the posts, please refresh the page and try again')
+    }
+}   
+
+
+export { publishPost, getPosts, deletePostByUser }
