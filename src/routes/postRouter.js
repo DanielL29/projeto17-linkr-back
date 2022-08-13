@@ -9,7 +9,7 @@ const postRouter = Router()
 
 postRouter.post('/posts', validateJwtToken, validateSchema('post'), urlMetadatas, verifyIfHaveHashtags, publishPost) 
 postRouter.get('/posts', validateJwtToken, getPosts)
-postRouter.patch('/posts/:postId', verifyIfHaveHashtags, updatePostByUser) // needs auth/token
+postRouter.patch('/posts/:postId', validateJwtToken, verifyIfHaveHashtags, updatePostByUser) // needs auth/token
 postRouter.delete('/posts/:postId', validateJwtToken, deletePostByUser) 
 
 export default postRouter
