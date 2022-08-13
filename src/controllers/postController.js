@@ -47,7 +47,7 @@ async function updatePostByUser(req, res) {
     const { user, hashtags, postHashtags } = res.locals
 
     try {
-        const { rows: postUpdated } = await updatePost(description, postId, 2)
+        await updatePost(description, postId, user.id)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {
@@ -82,10 +82,11 @@ async function updatePostByUser(req, res) {
 }   
 
 async function deletePostByUser(req, res) {
-    const { postId, userId } = req.query
+    const { postId } = req.params
+    const { user } = res.locals
     
     try {
-        await deletePost(postId, userId)
+        await deletePost(postId, user)
         return res.status(202).send("Delete post successfully")
     } catch (err) { 
         console.log(err)
