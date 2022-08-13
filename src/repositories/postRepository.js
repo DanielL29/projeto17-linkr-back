@@ -101,19 +101,17 @@ async function deletePostHashtags(postId, hashtagId) {
 }
 
 async function deletePost(postId, userId) {
-
-  await connection.query(
-    `
-  DELETE FROM posts
-  WHERE id = $1 AND "ownerId" = $2
-`,
-    [postId, userId]
-  );
-
   await connection.query(
     `DELETE FROM "postHashtags" WHERE "postId" = $1`,
     [postId]
   );
+  await connection.query(
+    `
+  DELETE FROM posts 
+  WHERE id = $1 AND "ownerId" = $2
+`,
+    [postId, userId]
+ ); 
 }
 
 export {
@@ -124,5 +122,5 @@ export {
   deletePost,
   selectPostHashtags,
   selectPost,
-  deletePostHashtags,
+  deletePostHashtags  
 };
