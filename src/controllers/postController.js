@@ -85,8 +85,9 @@ async function deletePostByUser(req, res) {
     const { postId } = req.params
     const { user } = res.locals
     
-    try {
-        await deletePost(postId, user)
+    try {        
+        await deletePost(postId, user.id) 
+        
         return res.status(202).send("Delete post successfully")
     } catch (err) { 
         console.log(err)
