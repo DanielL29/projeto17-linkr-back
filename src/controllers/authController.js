@@ -41,4 +41,21 @@ async function searchUsers(req, res) {
   }
 }
 
-export { signup, signin, searchUsers };
+async function getUser(req, res) {
+  const { userId } = req.params
+
+  try {
+    const { rows: user } = await selectUserById(userId)
+
+    if(user.length === 0) {
+      return res.sendStatus(404)
+    }
+
+    res.status(200).send(user[0])
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+}
+
+export { signup, signin, searchUsers, getUser };
