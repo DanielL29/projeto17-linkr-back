@@ -1,4 +1,4 @@
-import { getUserByEmail, insertUser, searchingUsers } from "./../repositories/authRepository.js";
+import { getUserByEmail, insertUser, searchingUsers, selectUserById } from "./../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
