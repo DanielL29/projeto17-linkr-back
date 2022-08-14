@@ -1,8 +1,4 @@
-import {
-  getUserByEmail,
-  insertUser,
-  searchingUsers,
-} from "./../repositories/authRepository.js";
+import { getUserByEmail, insertUser, searchingUsers } from "./../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -25,7 +21,7 @@ async function signin(req, res) {
     const data = {
       id: users[0].id,
     }
-    const token = await jwt.sign(data, process.env.SECRET_KEY);
+    const token = jwt.sign(data, process.env.SECRET_KEY);
     res.status(200).send(token);
   } catch {
     res.sendStatus(500);
