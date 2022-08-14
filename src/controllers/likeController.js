@@ -1,7 +1,7 @@
 import { dislikePost, getUserLikes, likePost } from "./../repositories/likeRepository.js";
 
 async function like(req, res) {
-    const postId = req.body,
+    const { postId } = req.body,
         userId = res.locals.user;
     try {
         await likePost(postId, userId);
@@ -12,10 +12,10 @@ async function like(req, res) {
 }
 
 async function dislike(req, res) {
-    const postId = req.body,
+    const { id } = req.params,
         userId = res.locals.user;
     try {
-        await dislikePost(postId, userId);
+        await dislikePost(id, userId);
         res.sendStatus(200);
     } catch {
         res.sendStatus(500);
