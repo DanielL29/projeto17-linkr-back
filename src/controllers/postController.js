@@ -6,7 +6,7 @@ async function publishPost(req, res) {
     const { urlImage, urlDescription, urlTitle, user, hashtags } = res.locals
 
     try {
-        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user.id)
+        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {

@@ -16,10 +16,4 @@ async function getUserLikes(id) {
     return likes;
 }
 
-async function getAllLikes() {
-    const query = `SELECT users.username, likes."postId", users.id FROM likes JOIN users ON likes."userId" = users.id;`;
-    const { rows: likes } = await connection.query(query);
-    return likes;
-}
-
-export { likePost, dislikePost, getUserLikes, getAllLikes };
+export { likePost, dislikePost, getUserLikes };
