@@ -6,7 +6,7 @@ async function publishPost(req, res) {
     const { urlImage, urlDescription, urlTitle, user, hashtags } = res.locals
 
     try {
-        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user.id)
+        const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {
@@ -30,9 +30,10 @@ async function publishPost(req, res) {
 
 async function getPosts(req, res) {
     const { hashtag, username } = req.query
+    const { user } = res.locals
     
     try {
-        const { rows: posts } = await selectPosts(hashtag, username)
+        const { rows: posts } = await selectPosts(hashtag, username, user)
 
         res.status(200).send(posts)
     } catch (err) { 
@@ -47,7 +48,7 @@ async function updatePostByUser(req, res) {
     const { user, hashtags, postHashtags } = res.locals
 
     try {
-        await updatePost(description, postId, user.id)
+        await updatePost(description, postId, user)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {
@@ -86,7 +87,7 @@ async function deletePostByUser(req, res) {
     const { user } = res.locals
     
     try {        
-        await deletePost(postId, user.id) 
+        await deletePost(postId, user) 
         
         return res.status(202).send("Delete post successfully")
     } catch (err) { 
