@@ -26,25 +26,29 @@ async function insertPostHashtags(postId, hashtagId) {
   );
 }
 
-async function selectPosts(hashtag, username) {
+async function selectPosts(hashtag, username, userId) {
   if (hashtag) {
     return connection.query(
       `
-            SELECT p.*, u.username, u."pictureUrl" 
+            SELECT p.*, u.username, u."pictureUrl",
+              CASE 
+                WHEN u.id = $2 THEN true
+                ELSE false 
+              END AS "userPost"
             FROM "postHashtags" ph
             JOIN hashtags h ON h.id = ph."hashtagId"
             JOIN posts p ON p.id = ph."postId"
-                JOIN users u ON u.id = p."ownerId"
+            JOIN users u ON u.id = p."ownerId"
             WHERE h.name = $1
             ORDER BY p.id DESC
             LIMIT 20
         `,
-      [hashtag]
+      [hashtag, userId]
     );
   } else if (username) {
     return connection.query(
       `
-            SELECT p.*, u.username, u."pictureUrl"
+            SELECT p.*, u.username, u."pictureUrl", true AS "userPost"
             FROM posts p 
             JOIN users u ON p."ownerId" = u.id
             WHERE u.id = $1
@@ -55,12 +59,16 @@ async function selectPosts(hashtag, username) {
     );
   } else {
     return connection.query(`
-            SELECT p.*, u.username, u."pictureUrl"
+            SELECT p.*, u.username, u."pictureUrl", 
+              CASE 
+                WHEN u.id = $1 THEN true
+                ELSE false
+              END AS "userPost"
             FROM posts p 
             JOIN users u ON p."ownerId" = u.id 
             ORDER BY p.id DESC 
             LIMIT 20
-        `);
+        `, [userId]);
   }
 }
 
