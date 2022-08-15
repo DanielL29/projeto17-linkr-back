@@ -26,7 +26,10 @@ async function getLikes(_req, res) {
     const userId = res.locals.user;
     try {
         const likes = await getUserLikes(userId);
-        res.send(likes);
+        const likesToSend = {
+            likes,
+        }
+        res.send(likesToSend);
     } catch {
         res.sendStatus(500);
     }
