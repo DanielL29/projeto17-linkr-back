@@ -26,7 +26,7 @@ async function insertPostHashtags(postId, hashtagId) {
   );
 }
 
-async function selectPosts(hashtag, username) {
+async function selectPosts(hashtag, username, userId) {
   if (hashtag) {
     return connection.query(
       `
@@ -47,7 +47,7 @@ async function selectPosts(hashtag, username) {
           ORDER BY p.id DESC             
           LIMIT 20;
         `,
-      [hashtag]
+      [hashtag, userId]
     );
   } else if (username) {
     return connection.query(
