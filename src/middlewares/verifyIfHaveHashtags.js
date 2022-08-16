@@ -12,7 +12,7 @@ async function verifyIfHaveHashtags(req, res, next) {
         for(let i = 0; i < treatDescription.length; i++) {
             const str = treatDescription[i]
             if(str.startsWith('#')) {
-                hashtags.push(str.replace('#', ''))
+                hashtags.push(str.replace('#', '').trim())
             }
         }
 

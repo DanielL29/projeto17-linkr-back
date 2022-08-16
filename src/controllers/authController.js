@@ -24,7 +24,7 @@ async function signin(req, res) {
     const token = jwt.sign(data, process.env.SECRET_KEY);
     const returnObject = {
       token,
-      id: users[0].id,
+      username: users[0].username,
       pictureUrl: users[0].pictureUrl,
     }
     res.status(200).send(returnObject);

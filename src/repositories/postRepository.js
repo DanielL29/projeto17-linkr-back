@@ -30,9 +30,9 @@ async function selectPosts(hashtag, username, userId) {
   if (hashtag) {
     return connection.query(
       `
-      SELECT p.*, u.username, u."pictureUrl", COALESCE(COUNT(l."userId"), 0)::INT AS "postLikes",
-              (SELECT COALESCE(JSON_AGG(u.username), '[]') 
-          FROM users u JOIN likes l ON u.id = l."userId" WHERE p.id = l."postId") as "userWhoLiked",               
+      SELECT p.*, u.username, u."pictureUrl", COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount",
+              (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked"
+          FROM users u JOIN likes l ON u.id = l."userId" WHERE p.id = l."postId"),               
           CASE   
             WHEN u.id = $1 THEN true                 
             ELSE false               
@@ -47,28 +47,32 @@ async function selectPosts(hashtag, username, userId) {
           ORDER BY p.id DESC             
           LIMIT 20;
         `,
-      [hashtag, userId]
+      [userId, hashtag]
     );
   } else if (username) {
     return connection.query(
       `
             SELECT p.*, u.username, u."pictureUrl",
-              COALESCE(COUNT(l."postId"), 0)  as "likesCount", 
-              (SELECT COALESCE(JSON_AGG(u.username), '[]') as users FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id)
+              COALESCE(COUNT(l."userId"), 0)::INT as "likesCount", 
+              (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked" FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id),
+              CASE   
+                WHEN u.id = $1 THEN true                 
+                ELSE false               
+              END AS "userPost"
             FROM posts p 
             JOIN users u ON p."ownerId" = u.id
             LEFT JOIN likes l ON l."postId" = p.id
-            WHERE u.id = $1
+            WHERE u.id = $2
             GROUP BY p.id, u.id
             ORDER BY p.id DESC
             LIMIT 20
         `,
-      [username]
+      [userId, username]
     );
   } else {
     return connection.query(`
-        SELECT p.*, COALESCE(COUNT(l."postId"), 0)  as "likesCount", 
-        (SELECT COALESCE(JSON_AGG(u.username), '[]') as users FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id),
+        SELECT p.*, COALESCE(COUNT(l."userId"), 0)::INT as "likesCount", 
+        (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked" FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id),
         CASE   
             WHEN u.id = $1 THEN true                 
             ELSE false               

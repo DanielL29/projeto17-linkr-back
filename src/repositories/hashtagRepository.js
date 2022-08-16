@@ -10,9 +10,9 @@ async function selectHashtag(name) {
 
 async function selectHashtags() {
     return connection.query(`
-        SELECT h.*, COUNT(ph."hashtagId") as "hashtagPostsCount"
-        FROM "postHashtags" ph
-        JOIN hashtags h ON h.id = ph."hashtagId" 
+        SELECT h.*, COALESCE(COUNT(ph."hashtagId"), 0)::INT as "hashtagPostsCount"
+        FROM hashtags h
+        LEFT JOIN "postHashtags" ph ON h.id = ph."hashtagId" 
         GROUP BY h.id
         ORDER BY "hashtagPostsCount" DESC, h.id
     `)
