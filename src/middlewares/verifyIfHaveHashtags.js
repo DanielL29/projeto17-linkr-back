@@ -7,24 +7,21 @@ async function verifyIfHaveHashtags(req, res, next) {
     let postHashtags = []
 
     if(description) {
-        const treatDescription = description.split(' ')
+        const treatDescription = description.split('#')
 
-        for(let i = 0; i < treatDescription.length; i++) {
+        for(let i = 1; i < treatDescription.length; i++) {
             const str = treatDescription[i]
-            if(str.startsWith('#')) {
-                hashtags.push(str.replace('#', '').trim())
-            }
+            hashtags.push(str.split(' ')[0].trim())
         }
+        console.log(hashtags)
 
         if(postId) {
             const { rows: post } = await selectPost(postId)
-            const postDescription = post[0].description.split(' ')
+            const postDescription = post[0].description.split('#')
 
-            for(let i = 0; i < postDescription.length; i++) {
+            for(let i = 1; i < postDescription.length; i++) {
                 const str = postDescription[i]
-                if(str.startsWith('#')) {
-                    postHashtags.push(str.replace('#', ''))
-                }
+                postHashtags.push(str.split(' ')[0].trim())
             }
         }
     }
