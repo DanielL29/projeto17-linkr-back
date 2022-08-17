@@ -14,6 +14,7 @@ async function selectComments(postId) {
         JOIN posts p ON p.id = c."postId"
         LEFT JOIN followers f ON f."userId" = p."ownerId"
         WHERE p.id = $1
+        ORDER BY c.id
     `, [postId])
 }
 

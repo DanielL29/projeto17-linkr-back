@@ -31,8 +31,8 @@ async function selectPosts(hashtag, username, userId) {
     return connection.query(
     `
       SELECT p.*, u.username, u."pictureUrl", 
-      COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount",
-      COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount",
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked"
           FROM users u 
@@ -46,9 +46,7 @@ async function selectPosts(hashtag, username, userId) {
       FROM "postHashtags" ph             
       JOIN hashtags h ON h.id = ph."hashtagId"             
       JOIN posts p ON p.id = ph."postId"             
-      JOIN users u ON u.id = p."ownerId"             
-      LEFT JOIN likes l ON l."postId" = p.id 
-      LEFT JOIN comments c ON c."postId" = p.id            
+      JOIN users u ON u.id = p."ownerId"                         
       WHERE h.name = $2             
       GROUP BY p.id, u.id             
       ORDER BY p.id DESC             
@@ -60,8 +58,8 @@ async function selectPosts(hashtag, username, userId) {
     return connection.query(
     `
       SELECT p.*, u.username, u."pictureUrl", 
-      COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount", 
-      COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount",
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
           FROM users u 
@@ -74,8 +72,6 @@ async function selectPosts(hashtag, username, userId) {
       END AS "userPost"
       FROM posts p 
       JOIN users u ON p."ownerId" = u.id
-      LEFT JOIN likes l ON l."postId" = p.id
-      LEFT JOIN comments c ON c."postId" = p.id
       WHERE u.id = $2
       GROUP BY p.id, u.id
       ORDER BY p.id DESC
@@ -87,8 +83,8 @@ async function selectPosts(hashtag, username, userId) {
     return connection.query(
     `
       SELECT p.*, u."pictureUrl", u.username, 
-      COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount", 
-      COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount",
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
           FROM users u 
@@ -101,8 +97,6 @@ async function selectPosts(hashtag, username, userId) {
       END AS "userPost" 
       FROM posts p 
       JOIN users u ON p."ownerId" = u.id
-      LEFT JOIN likes l ON l."postId" = p.id
-      LEFT JOIN comments c ON c."postId" = p.id
       GROUP BY p.id, u.id
       ORDER BY p.id DESC 
       LIMIT 20
