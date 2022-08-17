@@ -13,7 +13,6 @@ async function verifyIfHaveHashtags(req, res, next) {
             const str = treatDescription[i]
             hashtags.push(str.split(' ')[0].trim())
         }
-        console.log(hashtags)
 
         if(postId) {
             const { rows: post } = await selectPost(postId)

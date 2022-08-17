@@ -20,7 +20,7 @@ async function insertPost(
 }
 
 async function insertPostHashtags(postId, hashtagId) {
-  connection.query(
+  return connection.query(
     'INSERT INTO "postHashtags" ("postId", "hashtagId") VALUES ($1, $2)',
     [postId, hashtagId]
   );
@@ -118,7 +118,7 @@ async function selectPost(postId) {
 }
 
 async function deletePostHashtags(postId, hashtagId) {
-  connection.query(
+  return connection.query(
     'DELETE FROM "postHashtags" WHERE "postId" = $1 AND "hashtagId" = $2',
     [postId, hashtagId]
   );
