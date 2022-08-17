@@ -15,8 +15,4 @@ async function postComment(req, res) {
     }
 }
 
-async function getComments(req, res) {
-    
-}
-
-export { postComment, getComments }
+export { postComment }
