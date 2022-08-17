@@ -6,7 +6,7 @@ async function insertComment(userId, postId, description) {
 
 async function selectComments(postId) {
     return connection.query(`
-        SELECT u.username, u."pictureUrl", c.description,
+        SELECT u.id, u.username, u."pictureUrl", c.description,
             CASE WHEN u.id = p."ownerId" THEN true ELSE false END AS "postAuthor",
             CASE WHEN u.id = f."followerId" THEN true ELSE false END AS "following"
         FROM comments c

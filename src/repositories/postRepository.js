@@ -97,6 +97,8 @@ async function selectPosts(hashtag, username, userId) {
       END AS "userPost" 
       FROM posts p 
       JOIN users u ON p."ownerId" = u.id
+      JOIN followers f ON f."userId" = p."ownerId" 
+      WHERE f."followerId" = $1
       GROUP BY p.id, u.id
       ORDER BY p.id DESC 
       LIMIT 20
