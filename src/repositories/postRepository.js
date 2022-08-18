@@ -169,9 +169,11 @@ async function deletePost(postId, userId) {
  ); 
 }
 
-async function getNewPosts(lastPostId) {
-  const query = `SELECT * FROM posts WHERE id > $1;`;
-  const { rowCount: count } = await connection(query, [lastPostId]);
+async function getNewPosts(lastPostId, userId) {
+  const query = `SELECT * FROM "postsReposts"
+    JOIN followers ON followers."userId" = "postsReposts"."userId"
+    WHERE id > $1 AND followers."followerId" = $2 OR "postsReposts"."userId" = $2;`;
+  const { rowCount: count } = await connection.query(query, [lastPostId, userId]);
   return count;
 }
 

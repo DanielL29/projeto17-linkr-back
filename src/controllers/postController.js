@@ -105,12 +105,12 @@ async function deletePostByUser(req, res) {
 
 async function updateNumberOfPosts(req, res) {
     const lastPostId = req.params.postId;
-    try {
-        const newPosts = await getNewPosts(lastPostId);
-        res.send(newPosts);
-    } catch {
-        res.sendStatus(500);
-    }    
+    const user = res.locals.user;
+    const newPosts = await getNewPosts(lastPostId, user);
+    const count = { 
+        count: newPosts
+    }
+    res.send(count);
 }
 
 export { publishPost, getPosts, updatePostByUser, deletePostByUser, updateNumberOfPosts }
