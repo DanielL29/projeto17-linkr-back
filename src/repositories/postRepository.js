@@ -169,6 +169,12 @@ async function deletePost(postId, userId) {
  ); 
 }
 
+async function getNewPosts(lastPostId) {
+  const query = `SELECT * FROM posts WHERE id > $1;`;
+  const { rowCount: count } = await connection(query, [lastPostId]);
+  return count;
+}
+
 export {
   insertPost,
   insertPostHashtags,
@@ -177,5 +183,6 @@ export {
   deletePost,
   selectPostHashtags,
   selectPost,
-  deletePostHashtags  
+  deletePostHashtags,
+  getNewPosts  
 };

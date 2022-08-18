@@ -1,6 +1,6 @@
 import { selectFollowers } from "../repositories/followerRepository.js"
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
-import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags } from "../repositories/postRepository.js"
+import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags, getNewPosts } from "../repositories/postRepository.js"
 import { insertIntoPostsReposts } from "../repositories/repostRepository.js"
 
 async function publishPost(req, res) {
@@ -106,7 +106,7 @@ async function deletePostByUser(req, res) {
 async function updateNumberOfPosts(req, res) {
     const lastPostId = req.params.postId;
     try {
-        const { rowCount: newPosts } = await getNewPosts(lastPostId);
+        const newPosts = await getNewPosts(lastPostId);
         res.send(newPosts);
     } catch {
         res.sendStatus(500);
