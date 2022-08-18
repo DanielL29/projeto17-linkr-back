@@ -1,6 +1,7 @@
 import { selectFollowers } from "../repositories/followerRepository.js"
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
 import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags } from "../repositories/postRepository.js"
+import { insertIntoPostsReposts } from "../repositories/repostRepository.js"
 
 async function publishPost(req, res) {
     const post = req.body
@@ -8,6 +9,7 @@ async function publishPost(req, res) {
 
     try {
         const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user)
+        await insertIntoPostsReposts(user, postInserted[0].id, false)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {

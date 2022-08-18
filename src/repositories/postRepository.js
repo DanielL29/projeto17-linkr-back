@@ -30,9 +30,11 @@ async function selectPosts(hashtag, username, userId) {
   if (hashtag) {
     return connection.query(
     `
-      SELECT p.*, u.username, u."pictureUrl", 
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
       (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked"
           FROM users u 
@@ -44,12 +46,14 @@ async function selectPosts(hashtag, username, userId) {
         ELSE false               
       END AS "userPost"             
       FROM "postHashtags" ph             
-      JOIN hashtags h ON h.id = ph."hashtagId"             
-      JOIN posts p ON p.id = ph."postId"             
-      JOIN users u ON u.id = p."ownerId"                         
+      JOIN hashtags h ON h.id = ph."hashtagId"
+      JOIN "postsReposts" pr ON ph."postId" = pr."postId"             
+      JOIN posts p ON p.id = pr."postId"             
+      JOIN users u ON u.id = p."ownerId"
+      JOIN users u2 ON u2.id = pr."userId"                         
       WHERE h.name = $2             
-      GROUP BY p.id, u.id             
-      ORDER BY p.id DESC             
+      GROUP BY p.id, u.id, u2.id, pr.id             
+      ORDER BY pr.id DESC             
       LIMIT 20;
     `,
       [userId, hashtag]
@@ -57,9 +61,11 @@ async function selectPosts(hashtag, username, userId) {
   } else if (username) {
     return connection.query(
     `
-      SELECT p.*, u.username, u."pictureUrl", 
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
       (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
           FROM users u 
@@ -70,11 +76,13 @@ async function selectPosts(hashtag, username, userId) {
         WHEN u.id = $1 THEN true                 
         ELSE false               
       END AS "userPost"
-      FROM posts p 
+      FROM "postsReposts" pr 
+      JOIN posts p ON p.id = pr."postId"
       JOIN users u ON p."ownerId" = u.id
+      JOIN users u2 ON u2.id = pr."userId"
       WHERE u.id = $2
-      GROUP BY p.id, u.id
-      ORDER BY p.id DESC
+      GROUP BY p.id, u.id, u2.id, pr.id
+      ORDER BY pr.id DESC
       LIMIT 20
     `,
       [userId, username]
@@ -82,9 +90,11 @@ async function selectPosts(hashtag, username, userId) {
   } else {
     return connection.query(
     `
-      SELECT p.*, u."pictureUrl", u.username, 
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
       (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
         (
           SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
           FROM users u 
@@ -95,12 +105,14 @@ async function selectPosts(hashtag, username, userId) {
         WHEN u.id = $1 THEN true                 
         ELSE false               
       END AS "userPost" 
-      FROM posts p 
-      JOIN users u ON p."ownerId" = u.id
-      JOIN followers f ON f."userId" = p."ownerId" 
-      WHERE f."followerId" = $1
-      GROUP BY p.id, u.id
-      ORDER BY p.id DESC 
+      FROM "postsReposts" pr
+      JOIN posts p ON p.id = pr."postId" 
+      JOIN users u ON u.id = p."ownerId"
+      JOIN users u2 ON u2.id = pr."userId"
+      JOIN followers f ON f."userId" = pr."userId" 
+      WHERE f."followerId" = $1 OR pr."userId" = $1
+      GROUP BY p.id, u.id, pr.id, u2.id
+      ORDER BY pr.id DESC 
       LIMIT 20
     `, [userId]
     );
