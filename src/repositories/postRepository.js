@@ -20,7 +20,7 @@ async function insertPost(
 }
 
 async function insertPostHashtags(postId, hashtagId) {
-  connection.query(
+  return connection.query(
     'INSERT INTO "postHashtags" ("postId", "hashtagId") VALUES ($1, $2)',
     [postId, hashtagId]
   );
@@ -29,62 +29,93 @@ async function insertPostHashtags(postId, hashtagId) {
 async function selectPosts(hashtag, username, userId) {
   if (hashtag) {
     return connection.query(
-      `
-      SELECT p.*, u.username, u."pictureUrl", COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount",
-              (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked"
-          FROM users u JOIN likes l ON u.id = l."userId" WHERE p.id = l."postId"),               
-          CASE   
-            WHEN u.id = $1 THEN true                 
-            ELSE false               
-          END AS "userPost"             
-          FROM "postHashtags" ph             
-          JOIN hashtags h ON h.id = ph."hashtagId"             
-          JOIN posts p ON p.id = ph."postId"             
-          JOIN users u ON u.id = p."ownerId"             
-          LEFT JOIN likes l ON l."postId" = p.id             
-          WHERE h.name = $2             
-          GROUP BY p.id, u.id             
-          ORDER BY p.id DESC             
-          LIMIT 20;
-        `,
+    `
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
+        (
+          SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked"
+          FROM users u 
+          JOIN likes l ON u.id = l."userId" 
+          WHERE p.id = l."postId"
+        ),             
+      CASE   
+        WHEN u.id = $1 THEN true                 
+        ELSE false               
+      END AS "userPost"             
+      FROM "postHashtags" ph             
+      JOIN hashtags h ON h.id = ph."hashtagId"
+      JOIN "postsReposts" pr ON ph."postId" = pr."postId"             
+      JOIN posts p ON p.id = pr."postId"             
+      JOIN users u ON u.id = p."ownerId"
+      JOIN users u2 ON u2.id = pr."userId"                         
+      WHERE h.name = $2             
+      GROUP BY p.id, u.id, u2.id, pr.id             
+      ORDER BY pr.id DESC             
+      LIMIT 20;
+    `,
       [userId, hashtag]
     );
   } else if (username) {
     return connection.query(
-      `
-            SELECT p.*, u.username, u."pictureUrl",
-              COALESCE(COUNT(l."userId"), 0)::INT as "likesCount", 
-              (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked" FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id),
-              CASE   
-                WHEN u.id = $1 THEN true                 
-                ELSE false               
-              END AS "userPost"
-            FROM posts p 
-            JOIN users u ON p."ownerId" = u.id
-            LEFT JOIN likes l ON l."postId" = p.id
-            WHERE u.id = $2
-            GROUP BY p.id, u.id
-            ORDER BY p.id DESC
-            LIMIT 20
-        `,
+    `
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
+        (
+          SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
+          FROM users u 
+          JOIN likes l ON l."userId" = u.id 
+          WHERE l."postId" = p.id
+        ),
+      CASE   
+        WHEN u.id = $1 THEN true                 
+        ELSE false               
+      END AS "userPost"
+      FROM "postsReposts" pr 
+      JOIN posts p ON p.id = pr."postId"
+      JOIN users u ON p."ownerId" = u.id
+      JOIN users u2 ON u2.id = pr."userId"
+      WHERE u.id = $2
+      GROUP BY p.id, u.id, u2.id, pr.id
+      ORDER BY pr.id DESC
+      LIMIT 20
+    `,
       [userId, username]
     );
   } else {
-    return connection.query(`
-        SELECT p.*, COALESCE(COUNT(l."userId"), 0)::INT as "likesCount", 
-        (SELECT COALESCE(JSON_AGG(u.username), '[]') as "usersWhoLiked" FROM users u JOIN likes l ON l."userId" = u.id WHERE l."postId" = p.id),
-        CASE   
-            WHEN u.id = $1 THEN true                 
-            ELSE false               
-        END AS "userPost", 
-        u."pictureUrl", u.username
-                FROM posts p 
-                JOIN users u ON p."ownerId" = u.id
-                LEFT JOIN likes l ON l."postId" = p.id
-          GROUP BY p.id, u.id
-                ORDER BY p.id DESC 
-                LIMIT 20
-        `, [userId]);
+    return connection.query(
+    `
+      SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
+      pr."userId", pr.repost, u2.username AS "postRepostUser", 
+      (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
+      (SELECT COALESCE(COUNT(c."postId"), 0)::INT AS "commentsCount" FROM comments c WHERE c."postId" = p.id),
+      (SELECT COALESCE(COUNT(pr."postId"), 0)::INT AS "repostsCount" FROM "postsReposts" pr WHERE pr."postId" = p.id AND repost = true),
+        (
+          SELECT COALESCE(JSON_AGG(u.username), '[]') AS "usersWhoLiked" 
+          FROM users u 
+          JOIN likes l ON l."userId" = u.id 
+          WHERE l."postId" = p.id
+        ),
+      CASE   
+        WHEN u.id = $1 THEN true                 
+        ELSE false               
+      END AS "userPost" 
+      FROM "postsReposts" pr
+      JOIN posts p ON p.id = pr."postId" 
+      JOIN users u ON u.id = p."ownerId"
+      JOIN users u2 ON u2.id = pr."userId"
+      JOIN followers f ON f."userId" = pr."userId" 
+      WHERE f."followerId" = $1 OR pr."userId" = $1
+      GROUP BY p.id, u.id, pr.id, u2.id
+      ORDER BY pr.id DESC 
+      LIMIT 20
+    `, [userId]
+    );
   }
 }
 
@@ -118,7 +149,7 @@ async function selectPost(postId) {
 }
 
 async function deletePostHashtags(postId, hashtagId) {
-  connection.query(
+  return connection.query(
     'DELETE FROM "postHashtags" WHERE "postId" = $1 AND "hashtagId" = $2',
     [postId, hashtagId]
   );

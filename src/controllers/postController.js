@@ -1,5 +1,7 @@
+import { selectFollowers } from "../repositories/followerRepository.js"
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
 import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags } from "../repositories/postRepository.js"
+import { insertIntoPostsReposts } from "../repositories/repostRepository.js"
 
 async function publishPost(req, res) {
     const post = req.body
@@ -7,6 +9,7 @@ async function publishPost(req, res) {
 
     try {
         const { rows: postInserted } = await insertPost(post.url, post.description, urlImage, urlDescription, urlTitle, user)
+        await insertIntoPostsReposts(user, postInserted[0].id, false)
 
         if(hashtags.length > 0) {
             for(let i = 0; i < hashtags.length; i++) {
@@ -34,8 +37,12 @@ async function getPosts(req, res) {
     
     try {
         const { rows: posts } = await selectPosts(hashtag, username, user)
+        const { rowCount: followers } = await selectFollowers(user)
 
-        res.status(200).send(posts)
+        const followersPost = posts.length > 0 ? posts : followers === 0 ? 
+            "You don't follow anyone yet. Search for new friends!" : "No posts found from your friends"
+
+        res.status(200).send(!hashtag && !username ? followersPost : posts)
     } catch (err) { 
         console.log(err)
         res.status(500).send('An error occured while trying to fetch the posts, please refresh the page')
