@@ -94,6 +94,10 @@ async function deletePostByUser(req, res) {
         console.log(err)
         res.status(500).send('An error occured while trying delete the posts, please refresh the page and try again')
     }
-}   
+}
+
+async function updateNumberOfPosts(_req, res) {
+    
+}
 
 export { publishPost, getPosts, updatePostByUser, deletePostByUser }
