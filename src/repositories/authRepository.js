@@ -13,14 +13,17 @@ async function insertUser(user) {
   await connection.query(query, [email, password, username, pictureUrl]);
 }
 
-async function searchingUsers(username) {
+async function searchingUsers(username, userId) {
   const query = `
-    SELECT id, LOWER(username), "pictureUrl" 
-    FROM users
-    WHERE LOWER(username) LIKE $1;
+    SELECT u.id, LOWER(u.username), u."pictureUrl", 
+      CASE WHEN f."userId" = u.id AND f."followerId" = $2 THEN true ELSE false END AS "following"
+    FROM users u
+    LEFT JOIN followers f ON f."userId" = u.id AND f."followerId" = $2
+    WHERE LOWER(username) LIKE $1
+    ORDER BY f."userId", u.id;
     `;
 
-  const data = await connection.query(query, [`${username}%`]);
+  const data = await connection.query(query, [`${username}%`, userId]);
   return data;
 }
 
