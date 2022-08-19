@@ -81,7 +81,7 @@ async function selectPosts(hashtag, username, userId, offset) {
       JOIN posts p ON p.id = pr."postId"
       JOIN users u ON p."ownerId" = u.id
       JOIN users u2 ON u2.id = pr."userId"
-      WHERE u.id = $2
+      WHERE pr."userId" = $2
       GROUP BY p.id, u.id, u2.id, pr.id
       ORDER BY pr.id DESC
       LIMIT 10
