@@ -36,9 +36,10 @@ async function signin(req, res) {
 async function searchUsers(req, res) {
   //inserir token validation - Rota precisa de credencial
   const { username } = req.query;
+  const { user } = res.locals
 
   try {
-    const { rows: users } = await searchingUsers(username.toLowerCase());
+    const { rows: users } = await searchingUsers(username.toLowerCase(), user);
     res.status(200).send(users);
   } catch (err) {
     console.log(err);
