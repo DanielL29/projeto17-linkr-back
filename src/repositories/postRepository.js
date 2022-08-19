@@ -169,6 +169,14 @@ async function deletePost(postId, userId) {
  ); 
 }
 
+async function getNewPosts(lastPostId, userId) {
+  const query = `SELECT * FROM "postsReposts"
+    JOIN followers ON followers."userId" = "postsReposts"."userId"
+    WHERE id > $1 AND followers."followerId" = $2 OR "postsReposts"."userId" = $2;`;
+  const { rowCount: count } = await connection.query(query, [lastPostId, userId]);
+  return count;
+}
+
 export {
   insertPost,
   insertPostHashtags,
@@ -177,5 +185,6 @@ export {
   deletePost,
   selectPostHashtags,
   selectPost,
-  deletePostHashtags  
+  deletePostHashtags,
+  getNewPosts  
 };

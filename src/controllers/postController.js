@@ -1,6 +1,6 @@
 import { selectFollowers } from "../repositories/followerRepository.js"
 import { insertHashtag, selectHashtag } from "../repositories/hashtagRepository.js"
-import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags } from "../repositories/postRepository.js"
+import { insertPost, insertPostHashtags, selectPosts, updatePost, deletePost, selectPostHashtags, deletePostHashtags, getNewPosts } from "../repositories/postRepository.js"
 import { insertIntoPostsReposts } from "../repositories/repostRepository.js"
 
 async function publishPost(req, res) {
@@ -101,6 +101,16 @@ async function deletePostByUser(req, res) {
         console.log(err)
         res.status(500).send('An error occured while trying delete the posts, please refresh the page and try again')
     }
-}   
+}
 
-export { publishPost, getPosts, updatePostByUser, deletePostByUser }
+async function updateNumberOfPosts(req, res) {
+    const lastPostId = req.params.postId;
+    const user = res.locals.user;
+    const newPosts = await getNewPosts(lastPostId, user);
+    const count = { 
+        count: newPosts
+    }
+    res.send(count);
+}
+
+export { publishPost, getPosts, updatePostByUser, deletePostByUser, updateNumberOfPosts }
