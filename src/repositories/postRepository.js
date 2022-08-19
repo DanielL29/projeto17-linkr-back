@@ -26,7 +26,7 @@ async function insertPostHashtags(postId, hashtagId) {
   );
 }
 
-async function selectPosts(hashtag, username, userId) {
+async function selectPosts(hashtag, username, userId, offset) {
   if (hashtag) {
     return connection.query(
     `
@@ -54,9 +54,10 @@ async function selectPosts(hashtag, username, userId) {
       WHERE h.name = $2             
       GROUP BY p.id, u.id, u2.id, pr.id             
       ORDER BY pr.id DESC             
-      LIMIT 20;
+      LIMIT 10
+      OFFSET $3 * 10;
     `,
-      [userId, hashtag]
+      [userId, hashtag, offset]
     );
   } else if (username) {
     return connection.query(
@@ -83,9 +84,10 @@ async function selectPosts(hashtag, username, userId) {
       WHERE u.id = $2
       GROUP BY p.id, u.id, u2.id, pr.id
       ORDER BY pr.id DESC
-      LIMIT 20
+      LIMIT 10
+      OFFSET $3 * 10;
     `,
-      [userId, username]
+      [userId, username, offset]
     );
   } else {
     return connection.query(
@@ -113,8 +115,9 @@ async function selectPosts(hashtag, username, userId) {
       WHERE f."followerId" = $1 OR pr."userId" = $1
       GROUP BY p.id, u.id, pr.id, u2.id
       ORDER BY pr.id DESC 
-      LIMIT 20
-    `, [userId]
+      LIMIT 10
+      OFFSET $2 * 10;
+    `, [userId, offset]
     );
   }
 }

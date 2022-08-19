@@ -32,11 +32,11 @@ async function publishPost(req, res) {
 } 
 
 async function getPosts(req, res) {
-    const { hashtag, username } = req.query
+    const { hashtag, username, offset } = req.query
     const { user } = res.locals
     
     try {
-        const { rows: posts } = await selectPosts(hashtag, username, user)
+        const { rows: posts } = await selectPosts(hashtag, username, user, offset)
         const { rowCount: followers } = await selectFollowers(user)
 
         const followersPost = posts.length > 0 ? posts : followers === 0 ? 
