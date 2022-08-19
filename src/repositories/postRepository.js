@@ -111,7 +111,7 @@ async function selectPosts(hashtag, username, userId, offset) {
       LEFT JOIN posts p ON p.id = pr."postId" 
       JOIN users u ON u.id = p."ownerId"
       JOIN users u2 ON u2.id = pr."userId"
-      JOIN followers f ON f."userId" = pr."userId" 
+      LEFT JOIN followers f ON f."userId" = pr."userId" 
       WHERE f."followerId" = $1 OR pr."userId" = $1
       GROUP BY p.id, u.id, pr.id, u2.id
       ORDER BY pr.id DESC 
