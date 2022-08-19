@@ -47,8 +47,8 @@ async function selectPosts(hashtag, username, userId, offset) {
       END AS "userPost"             
       FROM "postHashtags" ph             
       JOIN hashtags h ON h.id = ph."hashtagId"
-      JOIN "postsReposts" pr ON ph."postId" = pr."postId"             
-      JOIN posts p ON p.id = pr."postId"             
+      LEFT JOIN "postsReposts" pr ON ph."postId" = pr."postId"             
+      LEFT JOIN posts p ON p.id = pr."postId"             
       JOIN users u ON u.id = p."ownerId"
       JOIN users u2 ON u2.id = pr."userId"                         
       WHERE h.name = $2             
@@ -78,7 +78,7 @@ async function selectPosts(hashtag, username, userId, offset) {
         ELSE false               
       END AS "userPost"
       FROM "postsReposts" pr 
-      JOIN posts p ON p.id = pr."postId"
+      LEFT JOIN posts p ON p.id = pr."postId"
       JOIN users u ON p."ownerId" = u.id
       JOIN users u2 ON u2.id = pr."userId"
       WHERE pr."userId" = $2
@@ -108,7 +108,7 @@ async function selectPosts(hashtag, username, userId, offset) {
         ELSE false               
       END AS "userPost" 
       FROM "postsReposts" pr
-      JOIN posts p ON p.id = pr."postId" 
+      LEFT JOIN posts p ON p.id = pr."postId" 
       JOIN users u ON u.id = p."ownerId"
       JOIN users u2 ON u2.id = pr."userId"
       JOIN followers f ON f."userId" = pr."userId" 
@@ -175,7 +175,7 @@ async function deletePost(postId, userId) {
 async function getNewPosts(lastPostId, userId) {
   const query = `SELECT * FROM "postsReposts"
     JOIN followers ON followers."userId" = "postsReposts"."userId"
-    WHERE id > $1 AND followers."followerId" = $2 OR "postsReposts"."userId" = $2;`;
+    WHERE id > $1 AND (followers."followerId" = $2 OR "postsReposts"."userId" = $2);`;
   const { rowCount: count } = await connection.query(query, [lastPostId, userId]);
   return count;
 }
