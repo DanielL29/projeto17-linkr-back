@@ -29,7 +29,7 @@ async function insertPostHashtags(postId, hashtagId) {
 async function selectPosts(hashtag, username, userId, offset) {
   if (hashtag) {
     return connection.query(
-    `
+      `
       SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
       pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
@@ -61,7 +61,7 @@ async function selectPosts(hashtag, username, userId, offset) {
     );
   } else if (username) {
     return connection.query(
-    `
+      `
       SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
       pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
@@ -91,7 +91,7 @@ async function selectPosts(hashtag, username, userId, offset) {
     );
   } else {
     return connection.query(
-    `
+      `
       SELECT pr.id, p.id AS "postId", p.url, p.description, p."ownerId", p."urlImage", p."urlTitle", p."urlDescription", u."pictureUrl", u.username,
       pr."userId", pr.repost, u2.username AS "postRepostUser", 
       (SELECT COALESCE(COUNT(l."userId"), 0)::INT AS "likesCount" FROM likes l JOIN posts p2 ON p2.id = l."postId" WHERE p.id = p2.id), 
@@ -164,12 +164,13 @@ async function deletePost(postId, userId) {
     [postId]
   );
   await connection.query(
-    `
-  DELETE FROM posts 
-  WHERE id = $1 AND "ownerId" = $2
-`,
+    `DELETE FROM posts WHERE id = $1 AND "ownerId" = $2`, 
     [postId, userId]
- ); 
+  );
+  await connection.query(
+    `DELETE FROM "postsReposts" WHERE "postId" = $1 AND "userId" = $2`,
+    [postId, userId]
+  );
 }
 
 async function getNewPosts(lastPostId, userId) {
@@ -189,5 +190,5 @@ export {
   selectPostHashtags,
   selectPost,
   deletePostHashtags,
-  getNewPosts  
+  getNewPosts
 };
