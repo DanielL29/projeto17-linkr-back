@@ -164,11 +164,11 @@ async function deletePost(postId, userId) {
     [postId]
   );
   await connection.query(
-    `DELETE FROM posts WHERE id = $1 AND "ownerId" = $2`, 
+    `DELETE FROM "postsReposts" WHERE "postId" = $1 AND "userId" = $2`,
     [postId, userId]
   );
   await connection.query(
-    `DELETE FROM "postsReposts" WHERE "postId" = $1 AND "userId" = $2`,
+    `DELETE FROM posts WHERE id = $1 AND "ownerId" = $2`, 
     [postId, userId]
   );
 }
